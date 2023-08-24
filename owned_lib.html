@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Grid</title>
+    <style>
+        /* CSS styles for the grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Three columns with equal width */
+            grid-gap: 20px; /* Gap between grid items */
+            padding: 20px;
+        }
+
+        .grid-item {
+            border: 1px solid #000;
+            padding: 10px;
+        }
+
+        .book-thumbnail {
+            width: 100px;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .book-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .book-authors {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container" id="book-grid"></div>
+
+    <script>
+        // Dummy book data for demonstration
+        var books = [
+            {
+                'thumbnail': 'https://via.placeholder.com/100',
+                'title': 'Book 1',
+                'authors': ['Author 1', 'Author 2']
+            },
+            {
+                'thumbnail': 'https://via.placeholder.com/100',
+                'title': 'Book 2',
+                'authors': ['Author 3', 'Author 4']
+            },
+            {
+                'thumbnail': 'https://via.placeholder.com/100',
+                'title': 'Book 3',
+                'authors': ['Author 5', 'Author 6']
+            },
+            // Add more books as needed
+        ];
+
+        // Loop through books data and create grid items
+        var bookGrid = document.getElementById('book-grid');
+        for (var i = 0; i < books.length; i++) {
+            var book = books[i];
+
+            // Create grid item
+            var gridItem = document.createElement('div');
+            gridItem.classList.add('grid-item');
+
+            // Create thumbnail element
+            var thumbnail = document.createElement('img');
+            thumbnail.classList.add('book-thumbnail');
+            thumbnail.src = book.thumbnail;
+            gridItem.appendChild(thumbnail);
+
+            // Create title element
+            var title = document.createElement('div');
+            title.classList.add('book-title');
+            title.textContent = book.title;
+            gridItem.appendChild(title);
+
+            // Create authors element
+            var authors = document.createElement('div');
+            authors.classList.add('book-authors');
+            authors.textContent = 'By: ' + book.authors.join(', ');
+            gridItem.appendChild(authors);
+
+            // Add grid item to the grid container
+            bookGrid.appendChild(gridItem);
+        }
+    </script>
+</body>
+</html>
