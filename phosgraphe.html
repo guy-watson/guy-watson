@@ -3,104 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Photography Portfolio</title>
+    <title>Background Image Page</title>
     <style>
         body {
-            background-color: #f1f1f1;
-            font-family: Arial, sans-serif;
             margin: 0;
-        }
-
-        header {
-            text-align: center;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 36px;
-            color: #333;
-        }
-
-        nav {
-            text-align: center;
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #fff;
-            margin: 0 20px;
-        }
-
-        .portfolio {
+            padding: 0;
+            background-image: url('background.jpg'); /* Add the path to your background image */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            height: 100vh;
             display: flex;
-            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
-            gap: 20px;
-            padding: 20px;
         }
 
-        .item {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+        .button-container {
             text-align: center;
-            border-radius: 5px;
-            width: 300px;
         }
 
-        .item img {
-            max-width: 100%;
-            border-radius: 5px;
-        }
-
-        .item h3 {
-            margin-top: 10px;
-            font-size: 24px;
-            color: #333;
-        }
-
-        .item p {
-            color: #666;
+        .clear-button {
+            background-color: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 15px 30px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 20px;
+            border-radius: 0; /* Remove border-radius for a square button */
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Your Photography Portfolio</h1>
-        <p>Welcome to a showcase of my work.</p>
-    </header>
-
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Portfolio</a>
-        <a href="#">About</a>
-        <a href="#">Contact</a>
-    </nav>
-
-    <div class="portfolio">
-        <div class="item">
-            <img src="image1.jpg" alt="Image 1">
-            <h3>Photo Title 1</h3>
-            <p>Description of the photo.</p>
-        </div>
-        <div class="item">
-            <img src="image2.jpg" alt="Image 2">
-            <h3>Photo Title 2</h3>
-            <p>Description of the photo.</p>
-        </div>
-        <div class="item">
-            <img src="image3.jpg" alt="Image 3">
-            <h3>Photo Title 3</h3>
-            <p>Description of the photo.</p>
-        </div>
-        <!-- Add more portfolio items as needed -->
+    <div class="button-container">
+        <a href="main.html" class="clear-button">Main Page</a>
     </div>
-
-    <!-- You can add more portfolio items and customize the content as needed -->
-
 </body>
 </html>
