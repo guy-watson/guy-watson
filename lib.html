@@ -30,12 +30,13 @@
             bookGrid.innerHTML = ''; // Clear the grid before appending
 
             library.forEach((book, index) => {
+                const authors = Array.isArray(book.authors) ? book.authors.join(', ') : 'N/A'; // Join authors if array
                 const bookDiv = document.createElement('div');
                 bookDiv.classList.add('book-item');
                 bookDiv.innerHTML = `
                     <img src="${book.thumbnail}" alt="Book cover">
                     <h3>${book.title}</h3>
-                    <p>Author: ${book.authors}</p>
+                    <p>Author: ${authors}</p>
                     <button class="remove-btn" data-index="${index}">Remove</button>
                 `;
                 bookGrid.appendChild(bookDiv);
