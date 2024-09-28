@@ -1,123 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Books API Search</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script> 
-    <style>
-        .book-result {
-            margin-bottom: 20px;
-            display: flex;
-        }
-        .book-thumbnail {
-            max-width: 200px;
-            max-height: 250px;
-            margin-right: 10px;
-        }
-        .book-details {
-            flex-grow: 1;
-        }
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            background-color: white;
-        }
-        .navbar ul {
-            display: flex;
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        .navbar li {
-            margin-right: 10px;
-        }
-        .navbar a {
-            display: inline-block;
-            padding: 3px 12px;
-            background-color: #efefef;
-            color: black;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px; 
-            outline: none; 
-            border: 1px solid #000;
-        }
-        .navbar a:hover {
-            background-color: #dcdcdc;
-        }
-
-        #scanner-container {
-            position: flex;
-        }
-
-        #video {
-            max-width: 600px;
-            max-height: 300px;
-        }
-
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="navbar">
         <h1>Google Books API Book Search</h1>
         <ul>
             <li><a href="#" class="btn">Search</a></li>
-            <li><a href="owned_lib.html" class="btn">Library</a></li>
+            <li><a href="lib.html" class="btn">Library</a></li>
             <li><a href="tbr_lib.html" class="btn">TBR</a></li>
             <li><a href="dbms.html" class="btn">DBMS</a></li>
-
         </ul>
     </div>
-    <form id="search-form">
-        <input type="text" id="search-input" placeholder="Enter a book title or author">
-        <button type="submit">Search</button>
-        <button type="button" id="scan-button">Scan</button>
 
-    </form>
-    <div id="scanner-container">
-        <video id="video" autoplay></video>
+    <div class="container">
+        <form id="search-form">
+            <input type="text" id="search-input" placeholder="Enter a book title or author">
+            <button type="submit">Search</button>
+            <button type="button" id="scan-button">Scan</button>
+        </form>
+
+        <!-- Scanner Section -->
+        <div id="scanner-container">
+            <h2>Barcode Scanner</h2>
+            <video id="video" autoplay></video>
+        </div>
+
         <div id="search-results"></div>
-
-    </div> 
+    </div>
 
     <script>
         var BASE_URL = 'https://www.googleapis.com/books/v1/volumes';
 
+        // Function to scroll smoothly to the search results section
+        function scrollToResults() {
+            $('html, body').animate({
+                scrollTop: $("#search-results").offset().top
+            }, 1000);
+        }
+
+        // Search event (form submission)
         $('#search-form').on('submit', function(event) {
             event.preventDefault();
             var query = $('#search-input').val();
             searchBook(query);
+            scrollToResults();  // Scroll down to results after search
         });
 
+        // Barcode scanning event
         $('#scan-button').on('click', function() {
-            // Simulate scanning of barcode using QuaggaJS
             Quagga.init({
                 inputStream: {
                     name: "Live",
                     type: "LiveStream",
-                    target: document.querySelector('#scanner-container'), // HTML element to attach the camera stream
+                    target: document.querySelector('#scanner-container'), 
                 },
                 decoder: {
-                    readers: ["ean_reader"] // Specify the type of barcode to scan (EAN in this example)
+                    readers: ["ean_reader"] 
                 }
             }, function(err) {
                 if (err) {
                     console.error(err);
                     return;
                 }
-                Quagga.start(); // Start the camera stream
+                Quagga.start(); 
                 Quagga.onDetected(function(result) {
-                    Quagga.stop(); // Stop the camera stream
-                    var scannedISBN = result.codeResult.code; // Extract the scanned barcode data
-                    $('#search-input').val(scannedISBN); // Set the scanned barcode data as the search query
-                    searchBook(scannedISBN); // Trigger book search based on the scanned barcode data
-                    $('#video').remove(); // Remove the video element from the DOM
-
+                    Quagga.stop(); 
+                    var scannedISBN = result.codeResult.code; 
+                    $('#search-input').val(scannedISBN); 
+                    searchBook(scannedISBN); 
+                    $('#video').remove(); 
+                    scrollToResults();  // Scroll down to results after scanning
                 });
             });
         });
+
+        // Function to add a book to the library
+        function addToLibrary(book) {
+            // Get existing library from localStorage or initialize an empty array
+            let library = JSON.parse(localStorage.getItem('library')) || [];
+
+            // Create a book object with the necessary details
+            const newBook = {
+                title: book.title,
+                author: book.author,
+                thumbnail: book.thumbnail, // Assuming we have a thumbnail image
+                predefinedTag: 'TBR', // Default tag is TBR (To Be Read)
+                customTag: '',
+                dateAdded: new Date().toISOString() // Store the date added
+            };
+
+            // Add the new book to the library array
+            library.push(newBook);
+
+            // Update localStorage with the new library
+            localStorage.setItem('library', JSON.stringify(library));
+
+            // Notify the user that the book was added successfully
+            alert(`${book.title} has been added to your library!`);
+
+            // Optionally, redirect to the library page to see the new book
+            window.location.href = 'lib.html';
+            }
+
+
+        
 
         function searchBook(query) {
             var params = {
@@ -125,14 +118,14 @@
                 'maxResults': 20 
             };
 
-        function truncateText(text, wordCount) {
-            var words = text.trim().split(' ');
-            if (words.length > wordCount) {
-                return words.slice(0, wordCount).join(' ') + '...';
-            } else {
-                return text;
+            function truncateText(text, wordCount) {
+                var words = text.trim().split(' ');
+                if (words.length > wordCount) {
+                    return words.slice(0, wordCount).join(' ') + '...';
+                } else {
+                    return text;
+                }
             }
-        };
 
             $.get(BASE_URL, params, function(data) {
                 var books = data.items || [];
@@ -147,9 +140,7 @@
                             'authors': item.volumeInfo.authors || 'N/A',
                             'description': item.volumeInfo.description || 'N/A',
                             'thumbnail': item.volumeInfo.imageLinks ? item.volumeInfo.imageLinks.thumbnail || 'N/A' : 'N/A',
-                            'genres': item.volumeInfo.categories || ['N/A'] 
-
-
+                            'genres': item.volumeInfo.categories || ['N/A']
                         };
                         var bookResult = $('<div>').addClass('book-result')
                             .append($('<img>').addClass('book-thumbnail').attr('src', book.thumbnail))
@@ -159,7 +150,9 @@
                                 .append($('<h4>').text('Genres: ' + book.genres.join(', ')))
                                 .append($('<a>').text('Buy on Amazon').attr('href', 'https://www.amazon.com/s?k=' + book.title.replace(/ /g, '+')).attr('target', '_blank'))
                                 .append($('<p>').text('Description: ' + truncateText(book.description, 50)))
-                                .append($('<button>').text('Add to library').addClass('add-to-owned-btn'))) 
+                                .append($('<button>').text('Add to Library').on('click', function() {
+                                    addToLibrary(book);
+                                }))) // Pass the book object directly
                             .appendTo(resultsContainer);
                     });
                 } else {
@@ -171,4 +164,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
