@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Library</title>
+    <link rel="stylesheet" href="library.css">
+</head>
+<body>
+    <div class="navbar">
+        <h1>Your Book Library</h1>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2>Your Book Collection</h2>
+        <div class="controls">
+            <label for="sort-options">Sort by:</label>
+            <select id="sort-options">
+                <option value="author">Author</option>
+                <option value="alphabetically">Alphabetically</option>
+                <option value="date-added">Date Added</option>
+            </select>
+        </div>
+
+        <div id="book-grid" class="book-grid"></div>
+    </div>
+
+    <script src="library.js"></script>
+</body>
+</html>
