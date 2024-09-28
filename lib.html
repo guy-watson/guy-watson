@@ -3,31 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Library</title>
-    <link rel="stylesheet" href="library.css">
+    <title>My Library</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="navbar">
-        <h1>Your Book Library</h1>
+        <h1>Google Books API Book Search</h1>
         <ul>
-            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html" class="btn">Search</a></li>
+            <li><a href="library.html" class="btn">Library</a></li>
+            <li><a href="tbr_lib.html" class="btn">TBR</a></li>
+            <li><a href="dbms.html" class="btn">DBMS</a></li>
         </ul>
     </div>
 
     <div class="container">
-        <h2>Your Book Collection</h2>
-        <div class="controls">
-            <label for="sort-options">Sort by:</label>
-            <select id="sort-options">
-                <option value="author">Author</option>
-                <option value="alphabetically">Alphabetically</option>
-                <option value="date-added">Date Added</option>
-            </select>
-        </div>
-
-        <div id="book-grid" class="book-grid"></div>
+        <h2>My Library</h2>
+        <div id="book-grid"></div>
     </div>
 
-    <script src="library.js"></script>
+    <script>
+        // Load the library from local storage
+        function loadLibrary() {
+            const library = JSON.parse(localStorage.getItem('library')) || [];
+            const bookGrid = document.getElementById('book-grid');
+            bookGrid.innerHTML = ''; // Clear the grid before appending
+
+            library.forEach((book, index) => {
+                const bookDiv = document.createElement('div');
+                bookDiv.classList.add('book-item');
+                bookDiv.innerHTML = `
+                    <img src="${book.thumbnail}" alt="Book cover">
+                    <h3>${book.title}</h3>
+                    <p>Author: ${book.authors}</p>
+                    <button class="remove-btn" data-index="${index}">Remove</button>
+                `;
+                bookGrid.appendChild(bookDiv);
+            });
+        }
+
+        // Function to remove a book
+        function removeBook(index) {
+            let library = JSON.parse(localStorage.getItem('library')) || [];
+            library.splice(index, 1); // Remove the book at the given index
+            localStorage.setItem('library', JSON.stringify(library));
+            loadLibrary(); // Reload the library after removing
+        }
+
+        // Event listener to handle removing a book
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('remove-btn')) {
+                const index = event.target.getAttribute('data-index');
+                removeBook(index);
+            }
+        });
+
+        // Initial loading of the library
+        document.addEventListener('DOMContentLoaded', loadLibrary);
+    </script>
 </body>
 </html>
