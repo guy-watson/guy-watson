@@ -215,7 +215,7 @@
                                 .append($('<h2>').text('Title: ' + book.title))
                                 .append($('<h3>').text('Authors: ' + book.authors))
                                 .append($('<h4>').text('Genres: ' + book.genres.join(', ')))
-                                .append($('<a>').text('Buy on Amazon').attr('href', 'https://www.amazon.com/s?k=' + book.title.replace(/ /g, '+')).attr('target', '_blank'))
+                                .append($('<a>').text('Buy on Amazon').attr('href', 'https://www.amazon.com/s?k=' + book.title.replace(/ /g, '+'))+ '&tag=guyssearchand-21').attr('target', '_blank')
                                 .append($('<p>').text('Description: ' + truncateText(book.description, 50)))  // Limited to 50 words
                                 .append($('<button>').text('Add to Library').on('click', function() {
                                     addToLibrary(book);
