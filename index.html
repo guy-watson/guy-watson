@@ -3,54 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guy's Book Search & Save Engine</title>
+    <title>Google Books API Search</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Button hover effect */
-        button:hover {
-            background-color: #d2691e; /* Slightly darker color on hover */
-            cursor: pointer;
-        }
-
-        /* Loading spinner */
-        #loading-spinner {
-            display: none;
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 2s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Search suggestions dropdown */
-        #suggestions {
-            position: absolute;
-            background-color: white;
-            border: 1px solid #ccc;
-            z-index: 1000;
-            max-height: 150px;
-            overflow-y: auto;
-            display: none;
-        }
-
-        .suggestion-item {
-            padding: 8px;
-            cursor: pointer;
-        }
-
-        .suggestion-item:hover {
-            background-color: #f1f1f1;
-        }
-    </style>
 </head>
 <body>
     <div class="navbar">
@@ -58,13 +14,14 @@
         <ul>
             <li><a href="#" class="btn">Search</a></li>
             <li><a href="lib.html" class="btn">Library</a></li>
+            <li><a href="tbr_lib.html" class="btn">TBR</a></li>
+            <li><a href="dbms.html" class="btn">DBMS</a></li>
         </ul>
     </div>
 
     <div class="container">
         <form id="search-form">
             <input type="text" id="search-input" placeholder="Enter a book title or author">
-            <div id="suggestions"></div> <!-- Suggestions dropdown -->
             <button type="submit">Search</button>
             <button type="button" id="scan-button">Scan</button>
         </form>
@@ -74,8 +31,6 @@
             <h2>Barcode Scanner</h2>
             <video id="video" autoplay></video>
         </div>
-
-        <div id="loading-spinner"></div> <!-- Loading spinner -->
 
         <div id="search-results"></div>
     </div>
@@ -88,16 +43,6 @@
             $('html, body').animate({
                 scrollTop: $("#search-results").offset().top
             }, 1000);
-        }
-
-        // Show loading spinner
-        function showLoadingSpinner() {
-            $('#loading-spinner').show();
-        }
-
-        // Hide loading spinner
-        function hideLoadingSpinner() {
-            $('#loading-spinner').hide();
         }
 
         // Search event (form submission)
@@ -136,64 +81,53 @@
             });
         });
 
-        // Fetch book suggestions for autocomplete
-        $('#search-input').on('input', function() {
-            var query = $(this).val();
-            if (query.length > 2) { // Start fetching after 2 characters
-                $.get(BASE_URL, { 'q': query, 'maxResults': 5 }, function(data) {
-                    var suggestions = data.items || [];
-                    var suggestionsContainer = $('#suggestions');
-                    suggestionsContainer.empty().show();
-                    
-                    suggestions.forEach(function(item) {
-                        var title = item.volumeInfo.title || 'No Title';
-                        $('<div>').addClass('suggestion-item').text(title).appendTo(suggestionsContainer)
-                            .on('click', function() {
-                                $('#search-input').val(title); // Set the input value
-                                suggestionsContainer.hide(); // Hide the suggestions
-                            });
-                    });
-                });
-            } else {
-                $('#suggestions').hide(); // Hide if input is less than 2 characters
-            }
-        });
-
         // Function to add a book to the library
         function addToLibrary(book) {
+            // Get existing library from localStorage or initialize an empty array
             let library = JSON.parse(localStorage.getItem('library')) || [];
 
+            // Create a book object with the necessary details
             const newBook = {
                 title: book.title,
                 author: book.author,
-                thumbnail: book.thumbnail,
-                predefinedTag: 'TBR',
+                thumbnail: book.thumbnail, // Assuming we have a thumbnail image
+                predefinedTag: 'TBR', // Default tag is TBR (To Be Read)
                 customTag: '',
-                dateAdded: new Date().toISOString()
+                dateAdded: new Date().toISOString() // Store the date added
             };
 
+            // Add the new book to the library array
             library.push(newBook);
-            localStorage.setItem('library', JSON.stringify(library));
-            alert(`${book.title} has been added to your library!`);
-            window.location.href = 'lib.html';
-        }
 
-        // Function to limit the description text
-        function truncateText(text, wordCount) {
-            var words = text.split(' ');
-            if (words.length > wordCount) {
-                return words.slice(0, wordCount).join(' ') + '...';
+            // Update localStorage with the new library
+            localStorage.setItem('library', JSON.stringify(library));
+
+            // Notify the user that the book was added successfully
+            alert(`${book.title} has been added to your library!`);
+
+            // Optionally, redirect to the library page to see the new book
+            window.location.href = 'lib.html';
             }
-            return text;
-        }
+
+
+        
 
         function searchBook(query) {
-            var params = { 'q': query, 'maxResults': 20 };
+            var params = {
+                'q': query, 
+                'maxResults': 20 
+            };
 
-            showLoadingSpinner(); // Show spinner before search
+            function truncateText(text, wordCount) {
+                var words = text.trim().split(' ');
+                if (words.length > wordCount) {
+                    return words.slice(0, wordCount).join(' ') + '...';
+                } else {
+                    return text;
+                }
+            }
 
             $.get(BASE_URL, params, function(data) {
-                hideLoadingSpinner(); // Hide spinner after search
                 var books = data.items || [];
                 var resultsContainer = $('#search-results');
                 resultsContainer.empty();
@@ -215,17 +149,16 @@
                                 .append($('<h3>').text('Authors: ' + book.authors))
                                 .append($('<h4>').text('Genres: ' + book.genres.join(', ')))
                                 .append($('<a>').text('Buy on Amazon').attr('href', 'https://www.amazon.com/s?k=' + book.title.replace(/ /g, '+')).attr('target', '_blank'))
-                                .append($('<p>').text('Description: ' + truncateText(book.description, 50)))  // Limited to 50 words
+                                .append($('<p>').text('Description: ' + truncateText(book.description, 50)))
                                 .append($('<button>').text('Add to Library').on('click', function() {
                                     addToLibrary(book);
-                                })))
+                                }))) // Pass the book object directly
                             .appendTo(resultsContainer);
                     });
                 } else {
                     $('<p>').text('No results found for "' + query + '"').appendTo(resultsContainer);
                 }
             }).fail(function() {
-                hideLoadingSpinner();
                 console.error('Failed to fetch book data.');
             });
         }
